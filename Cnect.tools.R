@@ -190,7 +190,7 @@ create.netcdf <- function(connect.l, names){
                        units    = 'year since 1990-01-01 00:00:00 +10',
                        longname = 'Time',
                        unlim    = TRUE,
-                       vals     = time)
+                       vals     = as.double(time))
     d      <- ncdim_def(name     = 'd',
                         longname = 'Donor',
                         vals     = n.pol, unit = 'prop')
@@ -203,10 +203,10 @@ create.netcdf <- function(connect.l, names){
     matrices <- rep(matrices, length(connect.l))
     for( fg in 1 : length(connect.l)){
         assign(paste('con.mat.', names[fg], sep = ''),
-               ncvar_def(name     = paste(names[fg],'_connectivity', sep = ''),
+               ncvar_def(name     = paste(names[fg],'_Connnectivity', sep = ''),
                          longname = paste('Connectivity of ', names[fg], sep = ''),
                          units    = 'proportion',
-                         dim      = list(d, r, t),
+                         dim      = list(r, d, t),
                          missval  = -9999,
                          prec     = 'double'))
         loc.col  <- match(gsub('rec_', '', colnames(connect.l[[fg]])), n.poly)
@@ -216,9 +216,9 @@ create.netcdf <- function(connect.l, names){
             ## this arregement is to avoid the problem of two spawning perior per year
             cat('\n WARNINGS -  - ', names[fg], ',  has different number of simulations.  check that\n')
             arre <- seq(from = 1, to = dim(connect.l[[fg]])[3], by = 2)
-            matrices[[fg]][loc.row, loc.col, time] <- connect.l[[fg]][, , arre]
+            matrices[[fg]][loc.col, loc.row, time] <- connect.l[[fg]][, , arre]
         } else {
-            matrices[[fg]][loc.row, loc.col, time] <- connect.l[[fg]]
+            matrices[[fg]][loc.col, loc.row, time] <- connect.l[[fg]]
         }
     }
     ## list witht the varialbes
