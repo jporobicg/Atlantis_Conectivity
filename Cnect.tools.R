@@ -102,11 +102,11 @@ zones.xml <- function(lon, lat, rel.pol, rec.pol = NULL, rel.depth = NULL, rec.d
 ##' @param real
 ##' @return A array with the structure A*B*C were A is the source, B is the sink and C in the nuber of years
 ##' @author Demiurgo
-connect.matrix<- function(dirpath, prop = TRUE, real = TRUE){
+connect.matrix<- function(filenames = NULL, dirpath = NULL, prop = TRUE, real = TRUE){
     library('RNetCDF')
     library(XML)
     ## The directory that contains the series of netcdf input files
-    filenames   <- list.files(path = dirpath, full.names = TRUE)
+    if(is.null(filenames)) filenames   <- list.files(path = dirpath, full.names = TRUE)
     nc          <- open.nc(filenames) ## open the file
     filezone    <- att.get.nc(nc,'NC_GLOBAL', 'release.zone.zone_file')
     simu        <- length(strsplit(att.get.nc(nc,'NC_GLOBAL', 'release.schedule.events'), '\\\"year')[[1]]) - 1
@@ -179,15 +179,16 @@ create.netcdf <- function(connect.l, names){
     if(!is.list(connect.l)) connect.l <- list(connect.l)
     ## Create connectivity array
     time     <- 1 : dim(connect.l[[1]])[3]  ## all the matrix and output should have the same time duration
-    n.pol    <- 0 : 50
+    n.pol    <- 0 : 58
     n.poly   <- c('Poly_0', 'Poly_1', 'Poly_2', 'Poly_3', 'Poly_4', 'Poly_5', 'Poly_6', 'Poly_7', 'Poly_8', 'Poly_9', 'Poly_10',
                   'Poly_11', 'Poly_12', 'Poly_13', 'Poly_14', 'Poly_15', 'Poly_16', 'Poly_17', 'Poly_18', 'Poly_19', 'Poly_20',
                   'Poly_21', 'AS_S_out', 'AS_N_out', 'JF5_N_out', 'RCSC_N_out', 'RCSC_S_out', 'JF5_S_out', 'JF4', 'JF3', 'JF2',
-                  'JF1_E', 'JF1_M', 'JF1_NO', 'JF1_SO', 'RCSC_NE', 'RCSC_SE', 'RCSC_NO', 'RCSC_SO', 'JF6_S', 'JF6_N', 'AS_NE',
-                  'AS_SE', 'AS_NO', 'AS_SO', 'RCSC', 'JF5', 'JF6', 'AS', 'BO2', 'BO1')
+                  'JF1_E', 'JF1_M', 'JF1_NO', 'JF1_SO', 'RCSC_O_NE', 'RCSC_O_SE', 'RCSC_O_NO', 'RCSC_O_SO', 'JF6_S', 'JF6_N', 'AS_O_NE',
+                  'AS_O_SE', 'AS_O_NO', 'AS_O_SO', 'RCSC', 'JF5', 'JF6', 'AS', 'BO2', 'BO1', 'RCSC_M_NO', 'RCSC_M_NE', 'RCSC_M_SO',
+                  'RCSC_M_SE', 'AS_M_NO', 'AS_M_NE', 'AS_M_SE', 'AS_M_SO')
 
     t     <- ncdim_def(name     = 't',
-                       units    = 'year since 1990-01-01 00:00:00 +10',
+                       units    = 'year since 1950-01-01 00:00:00 +10',
                        longname = 'Time',
                        unlim    = TRUE,
                        vals     = as.double(time))
